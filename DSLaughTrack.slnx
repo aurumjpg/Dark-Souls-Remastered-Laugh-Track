@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DSLaughTrack.Tests/DSLaughTrack.Tests.csproj" />
+    <Project Path="src/DSLaughTrack/DSLaughTrack.csproj" />
+  </Folder>
+</Solution>
