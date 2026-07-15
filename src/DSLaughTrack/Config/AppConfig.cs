@@ -32,6 +32,10 @@ public sealed class AppConfig
     {
         if (!File.Exists(path)) return new AppConfig();
         var cfg = JsonSerializer.Deserialize<AppConfig>(File.ReadAllText(path), JsonOpts);
+        if (cfg != null)
+        {
+            cfg.Triggers = new Dictionary<string, TriggerConfig>(cfg.Triggers, StringComparer.OrdinalIgnoreCase);
+        }
         return cfg ?? new AppConfig();
     }
 }

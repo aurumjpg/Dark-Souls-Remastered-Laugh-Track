@@ -27,7 +27,10 @@ public class ConfigTests
         var cfg = AppConfig.Load(path);
         Assert.Equal(0.5, cfg.MasterVolume);
         Assert.False(cfg.For("death").Enabled);
+        Assert.False(cfg.For("DEATH").Enabled);
+        Assert.False(cfg.For("Death").Enabled);
         Assert.Equal(10, cfg.For("death").CooldownSeconds);
+        Assert.Equal(10, cfg.For("DEATH").CooldownSeconds);
         Assert.Single(cfg.For("death").Sounds);
         Assert.True(cfg.For("unknownKey").Enabled); // default for unconfigured trigger
     }
