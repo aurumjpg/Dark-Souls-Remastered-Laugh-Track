@@ -1,0 +1,11 @@
+{
+  "_comment": "Discovered animation IDs. Every entry MUST record provenance. Entries without a 'value' are documented gaps, not usable IDs.",
+  "ids": {
+    "runningJump":  { "notes": "not yet discovered — run Task 13 discovery session" },
+    "gotParried":   { "notes": "not yet discovered" },
+    "parryAttempt": { "notes": "not yet discovered" },
+    "parrySuccess": { "notes": "not yet discovered" },
+    "emptyEstus":   { "notes": "not yet discovered" },
+    "hitWall":      { "notes": "not yet discovered; may be infeasible (illusory-wall distinction is out of scope)" }
+  }
+}

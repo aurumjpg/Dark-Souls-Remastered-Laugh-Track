@@ -16,4 +16,10 @@
     <InternalsVisibleTo Include="DSLaughTrack.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\config.json" Link="config.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\animation_ids.json" Link="animation_ids.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\sounds\**\*.*" Link="sounds\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
