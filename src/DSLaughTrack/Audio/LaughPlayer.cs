@@ -11,7 +11,9 @@ public sealed class LaughPlayer
     private readonly Func<AppConfig> _config;
     private readonly Log _log;
     private readonly Random _rng = new();
-    private int _playing; // 0 = idle, 1 = a sound is playing (no-overlap gate)
+    private readonly object _gateLock = new();
+    private object? _currentToken;   // non-null while a sound is playing (no-overlap gate)
+    private Action? _stopCurrent;    // stops the currently playing sound (for interrupts)
 
     public LaughPlayer(string soundsRoot, Func<AppConfig> config, Log log)
     {
@@ -24,33 +26,35 @@ public sealed class LaughPlayer
     {
         try
         {
-            if (!TryBeginPlayback())
+            var cfg = _config();
+            var tc = cfg.For(triggerKey);
+            var token = TryBeginPlayback(tc.Interrupt);
+            if (token is null)
             {
                 _log.Debug($"{triggerKey}: fired while another sound is playing — skipped (no-overlap)");
                 return;
             }
             try
             {
-                var cfg = _config();
-                var tc = cfg.For(triggerKey);
                 var file = ResolveSound(_soundsRoot, triggerKey, tc, _rng);
                 if (file is null)
                 {
                     _log.Warn($"{triggerKey}: fired, but no audio files found (looked in {Path.Combine(_soundsRoot, triggerKey)} and {Path.Combine(_soundsRoot, "default")}) — nothing played");
-                    EndPlayback();
+                    EndPlayback(token);
                     return;
                 }
                 var volume = (float)Math.Clamp(cfg.MasterVolume * tc.Volume, 0.0, 1.0);
                 var reader = new AudioFileReader(file) { Volume = volume };
                 var output = new WaveOutEvent();
-                output.PlaybackStopped += (_, _) => { output.Dispose(); reader.Dispose(); EndPlayback(); };
+                output.PlaybackStopped += (_, _) => { output.Dispose(); reader.Dispose(); EndPlayback(token); };
+                RegisterStopper(token, output.Stop);
                 output.Init(reader);
                 output.Play();
                 _log.Info($"LAUGH [{triggerKey}] {Path.GetFileName(file)} (vol {volume:0.00})");
             }
             catch
             {
-                EndPlayback();
+                EndPlayback(token);
                 throw;
             }
         }
@@ -60,11 +64,43 @@ public sealed class LaughPlayer
         }
     }
 
-    /// No-overlap gate: at most one sound plays at a time; fires while busy are
-    /// skipped (not queued) and the next fire after completion plays normally.
-    internal bool TryBeginPlayback() => Interlocked.CompareExchange(ref _playing, 1, 0) == 0;
+    /// No-overlap gate: at most one sound plays at a time. Non-interrupting fires
+    /// while busy are skipped (not queued); an interrupting fire (e.g. death) stops
+    /// the current sound and takes over. Returns a playback token, or null if skipped.
+    internal object? TryBeginPlayback(bool interrupt)
+    {
+        lock (_gateLock)
+        {
+            if (_currentToken is not null)
+            {
+                if (!interrupt) return null;
+                _stopCurrent?.Invoke(); // its PlaybackStopped callback disposes it; EndPlayback with the old token no-ops below
+            }
+            _currentToken = new object();
+            _stopCurrent = null;
+            return _currentToken;
+        }
+    }
 
-    internal void EndPlayback() => Interlocked.Exchange(ref _playing, 0);
+    internal void RegisterStopper(object token, Action stop)
+    {
+        lock (_gateLock)
+        {
+            if (ReferenceEquals(_currentToken, token)) _stopCurrent = stop;
+        }
+    }
+
+    internal void EndPlayback(object token)
+    {
+        lock (_gateLock)
+        {
+            if (ReferenceEquals(_currentToken, token))
+            {
+                _currentToken = null;
+                _stopCurrent = null;
+            }
+        }
+    }
 
     internal static string? ResolveSound(string soundsRoot, string triggerKey, TriggerConfig cfg, Random rng)
     {

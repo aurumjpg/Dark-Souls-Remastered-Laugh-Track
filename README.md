@@ -63,6 +63,7 @@ for the game process automatically and starts reacting once it detects one.
 | `triggers.<name>.enabled` | bool | Whether this trigger can fire at all. |
 | `triggers.<name>.volume` | number 0–1 | Per-trigger volume multiplier (combined with `masterVolume`). |
 | `triggers.<name>.cooldownSeconds` | number | Minimum time between two firings of *this specific* trigger. Default 0 (off) — every event fires, and the no-overlap gate alone paces the audio. Raise it if a trigger feels too chatty. |
+| `triggers.<name>.interrupt` | bool | When true, this trigger's sound *stops* whatever is currently playing and takes over, instead of being skipped by the no-overlap gate. Ships enabled for `death` only — so death music always plays, even if a laugh from the killing combo is mid-playback. |
 | `triggers.<name>.sounds` | array of strings | Explicit sound file names (relative to `sounds/`) to pick from. If empty, the app instead picks a random `.wav`/`.mp3` from `sounds/<name>/`. |
 
 The 9 trigger names are: `outOfStamina`, `tookDamage`, `dexIncrease`,

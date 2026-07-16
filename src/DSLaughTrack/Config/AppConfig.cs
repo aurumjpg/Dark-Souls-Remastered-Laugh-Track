@@ -7,6 +7,9 @@ public sealed class TriggerConfig
     public bool Enabled { get; set; } = true;
     public double Volume { get; set; } = 1.0;
     public double CooldownSeconds { get; set; } = 5.0;
+    /// When true, this trigger's sound stops whatever is currently playing and
+    /// takes over, instead of being skipped by the no-overlap gate.
+    public bool Interrupt { get; set; } = false;
     public List<string> Sounds { get; set; } = new();
 }
 

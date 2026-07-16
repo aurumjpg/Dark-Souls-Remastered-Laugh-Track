@@ -7,7 +7,7 @@
     "outOfStamina": { "enabled": true,  "volume": 0.7, "cooldownSeconds": 0, "sounds": [] },
     "tookDamage":   { "enabled": true,  "volume": 0.5, "cooldownSeconds": 0, "sounds": [] },
     "dexIncrease":  { "enabled": true,  "volume": 0.8, "cooldownSeconds": 0, "sounds": [] },
-    "death":        { "enabled": true,  "volume": 1.0, "cooldownSeconds": 0, "sounds": [] },
+    "death":        { "enabled": true,  "volume": 1.0, "cooldownSeconds": 0, "interrupt": true, "sounds": [] },
     "emptyEstus":   { "enabled": true,  "volume": 0.8, "cooldownSeconds": 0, "sounds": [] },
     "runningJump":  { "enabled": true,  "volume": 0.7, "cooldownSeconds": 0, "sounds": [] },
     "gotParried":   { "enabled": true,  "volume": 0.9, "cooldownSeconds": 0, "sounds": [] },

@@ -74,14 +74,38 @@ public class LaughPlayerTests : IDisposable
         Assert.Equal(fallback, resolved);
     }
 
+    private LaughPlayer NewPlayer() =>
+        new(_root, () => new DSLaughTrack.Config.AppConfig(), new DSLaughTrack.Logging.Log());
+
     [Fact]
     public void PlaybackGate_BlocksWhileBusy_ReopensAfterCompletion()
     {
-        var player = new LaughPlayer(_root, () => new DSLaughTrack.Config.AppConfig(), new DSLaughTrack.Logging.Log());
-        Assert.True(player.TryBeginPlayback());   // first sound starts
-        Assert.False(player.TryBeginPlayback());  // second fire while busy: skipped
-        Assert.False(player.TryBeginPlayback());  // still busy
-        player.EndPlayback();                     // sound finished
-        Assert.True(player.TryBeginPlayback());   // next fire plays again
+        var player = NewPlayer();
+        var first = player.TryBeginPlayback(interrupt: false);
+        Assert.NotNull(first);                                       // first sound starts
+        Assert.Null(player.TryBeginPlayback(interrupt: false));      // second fire while busy: skipped
+        Assert.Null(player.TryBeginPlayback(interrupt: false));      // still busy
+        player.EndPlayback(first!);                                  // sound finished
+        Assert.NotNull(player.TryBeginPlayback(interrupt: false));   // next fire plays again
+    }
+
+    [Fact]
+    public void InterruptingTrigger_TakesOverWhileBusy()
+    {
+        var player = NewPlayer();
+        var stopped = false;
+        var laugh = player.TryBeginPlayback(interrupt: false);
+        Assert.NotNull(laugh);
+        player.RegisterStopper(laugh!, () => stopped = true);
+
+        var death = player.TryBeginPlayback(interrupt: true);        // death fires mid-laugh
+        Assert.NotNull(death);                                       // it takes over
+        Assert.True(stopped);                                        // the laugh was stopped
+
+        player.EndPlayback(laugh!);                                  // stale callback from stopped laugh
+        Assert.Null(player.TryBeginPlayback(interrupt: false));      // must NOT reopen the gate: death still playing
+
+        player.EndPlayback(death!);                                  // death music finished
+        Assert.NotNull(player.TryBeginPlayback(interrupt: false));   // gate open again
     }
 }

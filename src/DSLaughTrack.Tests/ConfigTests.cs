@@ -36,6 +36,19 @@ public class ConfigTests
     }
 
     [Fact]
+    public void Load_ParsesInterruptFlag_DefaultsFalse()
+    {
+        var path = Path.GetTempFileName();
+        File.WriteAllText(path, """
+            { "triggers": { "death": { "interrupt": true }, "tookDamage": { } } }
+            """);
+        var cfg = AppConfig.Load(path);
+        Assert.True(cfg.For("death").Interrupt);
+        Assert.False(cfg.For("tookDamage").Interrupt);
+        Assert.False(cfg.For("unknownKey").Interrupt);
+    }
+
+    [Fact]
     public void Load_MalformedJson_Throws()
     {
         var path = Path.GetTempFileName();
