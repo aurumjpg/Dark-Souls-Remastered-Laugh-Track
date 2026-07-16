@@ -22,8 +22,9 @@ public static class TriggerFactory
         else
             LogDisabled(log, "emptyEstus");
 
-        if (ids.Get("hitWall") is int wallAnim)
-            list.Add(new AnimationTrigger("hitWall", wallAnim));
+        var wallAnims = ids.GetAll("hitWall");
+        if (wallAnims.Count > 0)
+            list.Add(new AnimationTrigger("hitWall", wallAnims));
         else
             LogDisabled(log, "hitWall");
 

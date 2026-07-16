@@ -27,4 +27,38 @@ public class AnimationIdsTests
         Assert.Equal(1234, ids.Get("runningJump"));
         Assert.Null(ids.Get("hitWall"));
     }
+
+    [Fact]
+    public void Load_ReadsValuesArray_GetAllReturnsAllAndGetReturnsFirst()
+    {
+        var path = Path.GetTempFileName();
+        File.WriteAllText(path, """
+            { "ids": {
+                "hitWall": { "values": [253150, 254150], "notes": "moveset-relative wall bounce" }
+            } }
+            """);
+        var ids = AnimationIds.Load(path, new Log());
+        Assert.Equal(new[] { 253150, 254150 }, ids.GetAll("hitWall"));
+        Assert.Equal(253150, ids.Get("hitWall"));
+    }
+
+    [Fact]
+    public void GetAll_SingleValueEntry_ReturnsOneElementList()
+    {
+        var path = Path.GetTempFileName();
+        File.WriteAllText(path, """
+            { "ids": {
+                "runningJump": { "value": 1234 }
+            } }
+            """);
+        var ids = AnimationIds.Load(path, new Log());
+        Assert.Equal(new[] { 1234 }, ids.GetAll("runningJump"));
+    }
+
+    [Fact]
+    public void GetAll_MissingKey_ReturnsEmptyList()
+    {
+        var ids = new AnimationIds(new Dictionary<string, int>());
+        Assert.Empty(ids.GetAll("nope"));
+    }
 }

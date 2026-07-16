@@ -18,6 +18,29 @@ public class AnimationTriggerTests
     }
 
     [Fact]
+    public void MultiTarget_FiresOnEnteringEitherIdFromOutsideSet()
+    {
+        var t = new AnimationTrigger("hitWall", new[] { 253150, 254150 });
+        Assert.True(t.ShouldFire(States.S(anim: 0), States.S(anim: 253150)));
+        Assert.True(t.ShouldFire(States.S(anim: 0), States.S(anim: 254150)));
+    }
+
+    [Fact]
+    public void MultiTarget_DoesNotFireTransitioningBetweenInSetIds()
+    {
+        var t = new AnimationTrigger("hitWall", new[] { 253150, 254150 });
+        Assert.False(t.ShouldFire(States.S(anim: 253150), States.S(anim: 254150)));
+        Assert.False(t.ShouldFire(States.S(anim: 254150), States.S(anim: 253150)));
+    }
+
+    [Fact]
+    public void MultiTarget_NullPrevDoesNotFire()
+    {
+        var t = new AnimationTrigger("hitWall", new[] { 253150, 254150 });
+        Assert.False(t.ShouldFire(States.S(anim: null), States.S(anim: 253150)));
+    }
+
+    [Fact]
     public void ExtraCondition_Gates()
     {
         var t = new AnimationTrigger("emptyEstus", 555, s => s.EstusCount == 0);
