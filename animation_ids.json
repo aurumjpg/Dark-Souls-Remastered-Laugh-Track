@@ -1,11 +1,39 @@
 {
-  "_comment": "Discovered animation IDs. Every entry MUST record provenance. Entries without a 'value' are documented gaps, not usable IDs.",
+  "_comment": "Discovered animation IDs. Every entry MUST record provenance. Entries without a 'value'/'values' are documented gaps, not usable IDs. All values below were captured empirically with --monitor during the 2026-07-15 discovery session (Steam DSR, exe FileVersion 1.0.0.0) and are read via the DsrPointers animation chain documented in src/DSLaughTrack/Memory/DsrPointers.cs. Animation IDs may vary by weapon/moveset — see README 'How discovery works' to recapture.",
   "ids": {
-    "runningJump":  { "notes": "not yet discovered — run Task 13 discovery session" },
-    "gotParried":   { "notes": "not yet discovered" },
-    "parryAttempt": { "notes": "not yet discovered" },
-    "parrySuccess": { "notes": "not yet discovered" },
-    "emptyEstus":   { "notes": "not yet discovered" },
-    "hitWall":      { "notes": "not yet discovered; may be infeasible (illusory-wall distinction is out of scope)" }
+    "runningJump": {
+      "value": 900,
+      "capturedOn": "2026-07-15",
+      "gameVersion": "Steam latest (exe FileVersion 1.0.0.0)",
+      "method": "--monitor discovery; 3 clean repetitions in two independent sessions (6 total), each isolated by idle (-1) gaps",
+      "notes": "sprint + jump. Contrast values: roll=710, backstep=711."
+    },
+    "gotParried": {
+      "notes": "NOT DISCOVERED — no parry-capable enemy was reachable during the session (fresh NG+). To capture: run --monitor, get parried by e.g. a Balder Knight 3+ times, confirm the same ID each time, then add it here as 'value' with provenance. Trigger stays disabled until then."
+    },
+    "parryAttempt": {
+      "value": 485102,
+      "capturedOn": "2026-07-15",
+      "gameVersion": "Steam latest (exe FileVersion 1.0.0.0)",
+      "method": "--monitor discovery; 3 clean air-whiffs, 1 whiff-followed-by-hit, and 3 successful parries — identical ID in all cases",
+      "notes": "Whiffed and successful parries play the SAME player animation (see parrySuccess)."
+    },
+    "parrySuccess": {
+      "notes": "NOT DISTINGUISHABLE (verified negative result, 2026-07-15): a successful parry plays the same player animation ID (485102) as a whiffed parry — confirmed 3 whiffs vs 3 successes. failedParry therefore cannot tell success from failure and fires on EVERY parry attempt after its window; it ships disabled by default for this reason."
+    },
+    "emptyEstus": {
+      "value": 7588,
+      "capturedOn": "2026-07-15",
+      "gameVersion": "Steam latest (exe FileVersion 1.0.0.0)",
+      "method": "--monitor discovery; drink-with-charges plays 7585→7586→7587 (observed 7+ times); empty-flask attempts play 7585→7588 (observed 8 times), with 7588 appearing ONLY while EstusCount==0",
+      "notes": "7588 = empty-flask shake. The trigger is additionally gated on EstusCount==0 (belt and braces)."
+    },
+    "hitWall": {
+      "values": [254150, 253150],
+      "capturedOn": "2026-07-15",
+      "gameVersion": "Steam latest (exe FileVersion 1.0.0.0)",
+      "method": "--monitor discovery; 3 one-handed wall bounces (254000→254150) + 3 two-handed wall bounces (253000→253150)",
+      "notes": "EXPERIMENTAL. Weapon-bounce animation is moveset-relative (attack family + 150); other weapons/movesets may use other families — recapture and extend 'values' as needed. May also fire when a high-stability shield bounces your attack (not observed in testing, could not be ruled out). Illusory-wall distinction is out of scope (documented limitation)."
+    }
   }
 }

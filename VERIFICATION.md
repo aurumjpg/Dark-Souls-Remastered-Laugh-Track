@@ -15,11 +15,11 @@ tests pass and the app runs without errors.
 | tookDamage      | HP (SoulMemory) decreases, stays > 0                           | VERIFIED     | 2026-07-15 / Steam latest          | 4 live fires; hits inside 8s cooldown correctly silent; did NOT fire on killing blow or during respawn HP refill; menus produced no false fires. |
 | dexIncrease     | Dexterity attribute (SoulMemory) increases                     | VERIFIED     | 2026-07-15 / Steam latest          | Fired exactly on level-up confirm (39→40); opening level-up screen without confirming fired nothing. |
 | death           | HP (SoulMemory) crosses > 0 to <= 0                             | VERIFIED     | 2026-07-15 / Steam latest          | Fired on death; respawn (player unload → reload, HP 0→full) fully suppressed. |
-| emptyEstus      | Animation ID + EstusCount == 0                                 | NOT VERIFIED |                                     | EstusCount itself VERIFIED live (drink 9→8 exact, bonfire refill 8→10 exact). Drink-with-charges anims observed: 7585/7586/7587. Empty-drink anim still to discover. |
-| runningJump     | Animation ID (not yet discovered)                              | NOT VERIFIED |                                     | Roll anim observed as 710 (useful contrast for discovery). |
-| gotParried      | Animation ID (not yet discovered)                              | NOT VERIFIED |                                     |       |
-| failedParry     | Animation ID pair: parryAttempt without parrySuccess in window | NOT VERIFIED |                                     |       |
-| hitWall         | Animation ID (not yet discovered; may be infeasible)           | NOT VERIFIED |                                     |       |
+| emptyEstus      | Anim 7588 + EstusCount == 0                                    | VERIFIED     | 2026-07-16 / Steam latest          | Fired on empty-flask attempt; 5 normal drinks correctly silent. 7588 observed only while EstusCount==0 (8 occurrences). |
+| runningJump     | Anim 900                                                       | VERIFIED     | 2026-07-16 / Steam latest          | 4 live fires; captured 6 clean repetitions across two sessions; rolls (710) and backsteps (711) never triggered it. |
+| gotParried      | Animation ID (not yet captured)                                | NOT DISCOVERED |                                   | No parry-capable enemy reachable in session (fresh NG+). Ships disabled; capture instructions in animation_ids.json + README. |
+| failedParry     | Anim 485102 without parrySuccess in window                     | EXPERIMENTAL (disabled) | 2026-07-16 / Steam latest | Verified negative result: successful parry plays the SAME anim as a whiff (3 vs 3 confirmed), so success is indistinguishable — if enabled, fires on every parry attempt. |
+| hitWall         | Anims 254150 (1H) / 253150 (2H) — bounce = attack family + 150 | EXPERIMENTAL (verified firing, disabled by default) | 2026-07-16 / Steam latest | 3+3 clean captures, 3 live fires incl. both stances. Caveats: moveset-relative IDs (other weapons may need more values); high-stability shield bounce may reuse these IDs (unconfirmed); illusory walls indistinguishable (out of scope). |
 
 ## Session A evidence (2026-07-15)
 

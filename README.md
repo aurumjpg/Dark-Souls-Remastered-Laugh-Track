@@ -64,9 +64,26 @@ for the game process automatically and starts reacting once it detects one.
 The 9 trigger names are: `outOfStamina`, `tookDamage`, `dexIncrease`,
 `death`, `emptyEstus`, `runningJump`, `gotParried`, `failedParry`, `hitWall`.
 
-`failedParry` and `hitWall` ship **disabled** by default — their underlying
-animation-ID detection is experimental / not yet discovered. See
-`VERIFICATION.md` for the verification status of every trigger.
+Trigger status after the 2026-07-15 live verification sessions (full evidence
+in `VERIFICATION.md`):
+
+- **Verified & enabled by default:** `outOfStamina`, `tookDamage`,
+  `dexIncrease`, `death`, `runningJump`, `emptyEstus`.
+- **`hitWall` — experimental, disabled by default.** It verifiably fires on
+  wall bounces (one- and two-handed captured), but the bounce animation is
+  moveset-relative (other weapons may need extra IDs added to
+  `animation_ids.json`) and it may also fire if a high-stability shield
+  bounces your attack — that case couldn't be ruled out in testing.
+- **`failedParry` — experimental, disabled by default.** Discovery proved a
+  successful parry plays the *same* player animation as a whiff, so this
+  trigger cannot tell them apart: if enabled, it laughs at every parry
+  attempt (which you may find fitting; enable at your own comedic risk).
+- **`gotParried` — not yet captured.** No parry-capable enemy was reachable
+  during the discovery session. To activate it: run `--monitor`, get parried
+  3+ times, confirm the same animation ID each time, and add it to
+  `animation_ids.json` with provenance.
+- Distinguishing illusory walls from normal walls is **out of scope** —
+  `hitWall` cannot tell them apart (documented limitation).
 
 Config is hot-reloaded: edit `config.json` while the app is running and it
 picks up the change within about a second (checked by file write time). If
