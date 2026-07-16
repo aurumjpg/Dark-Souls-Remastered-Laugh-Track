@@ -19,7 +19,27 @@
   <ItemGroup>
     <None Include="..\..\config.json" Link="config.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\animation_ids.json" Link="animation_ids.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\sounds\**\*.wav;..\..\sounds\**\*.mp3" Link="sounds\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\sounds\**\*.wav;..\..\sounds\**\*.mp3" Link="sounds\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
   </ItemGroup>
+
+  <!-- Output sounds folders mirror source sounds\ exactly: builds copy files in,
+       these targets delete files that no longer exist in source. -->
+  <Target Name="CleanStaleSounds" AfterTargets="Build">
+    <ItemGroup>
+      <_SoundsSource Include="..\..\sounds\**\*.wav;..\..\sounds\**\*.mp3" />
+      <_SoundsInOutput Include="$(OutDir)sounds\**\*" />
+      <_StaleSounds Include="@(_SoundsInOutput)" Exclude="@(_SoundsSource->'$(OutDir)sounds\%(RecursiveDir)%(Filename)%(Extension)')" />
+    </ItemGroup>
+    <Delete Files="@(_StaleSounds)" />
+  </Target>
+
+  <Target Name="CleanStaleSoundsOnPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <_SoundsSourcePub Include="..\..\sounds\**\*.wav;..\..\sounds\**\*.mp3" />
+      <_SoundsInPublish Include="$(PublishDir)sounds\**\*" />
+      <_StaleSoundsPub Include="@(_SoundsInPublish)" Exclude="@(_SoundsSourcePub->'$(PublishDir)sounds\%(RecursiveDir)%(Filename)%(Extension)')" />
+    </ItemGroup>
+    <Delete Files="@(_StaleSoundsPub)" />
+  </Target>
 
 </Project>
