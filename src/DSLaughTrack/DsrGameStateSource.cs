@@ -37,11 +37,10 @@ public sealed class DsrGameStateSource : IGameStateSource, IDisposable
 
         var hp = Try(() => (int?)Game.GetPlayerHealth(), "GetPlayerHealth");
         var dex = Try(() => (int?)Game.GetAttribute(SoulMemory.DarkSouls1.Attribute.Dexterity), "GetAttribute(Dex)");
-        int? stamina = null, maxStamina = null, anim = null;
+        int? stamina = null, anim = null;
         if (_pointersOk && _memory is not null)
         {
             stamina = Pointers.ReadStamina(_memory);
-            maxStamina = Pointers.ReadMaxStamina(_memory);
             anim = Pointers.ReadAnimationId(_memory);
         }
         var estus = ReadEstusCached(now);

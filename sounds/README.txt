@@ -11,9 +11,9 @@ Folders (one per trigger, names match config.json's "triggers" keys):
   tookDamage/    - player takes damage and survives
   dexIncrease/   - Dexterity attribute increases (level up)
   death/         - player HP hits zero
-  emptyEstus/    - Estus Flask used while already empty (animation-based; disabled until discovered)
-  runningJump/   - running jump animation plays (animation-based; disabled until discovered)
-  gotParried/    - player gets parried (animation-based; disabled until discovered)
+  emptyEstus/    - Estus Flask used while already empty (animation-based; discovered, enabled by default)
+  runningJump/   - running jump animation plays (animation-based; discovered, enabled by default)
+  gotParried/    - player gets parried (animation-based; not yet captured, see animation_ids.json)
   failedParry/   - parry attempted but missed (animation-based; disabled by default, experimental)
   hitWall/       - player runs into a wall (animation-based; disabled by default, experimental)
 

@@ -11,7 +11,7 @@ var soundsRoot = Path.Combine(baseDir, "sounds");
 var logPath = Path.Combine(baseDir, "logs", $"dslaughtrack-{DateTime.Now:yyyyMMdd-HHmmss}.log");
 
 var log = new Log(logPath);
-var config = SafeLoadConfig(configPath, new AppConfig(), log);
+var config = SafeLoadConfig(configPath, new AppConfig(), log, out _);
 log.MinLevel = config.LogLevel.Equals("debug", StringComparison.OrdinalIgnoreCase) ? LogLevel.Debug : LogLevel.Info;
 var configWriteTime = FileTime(configPath);
 
@@ -29,7 +29,7 @@ var triggers = TriggerFactory.Build(ids, log);
 var engine = new TriggerEngine(triggers, () => config);
 var player = new LaughPlayer(soundsRoot, () => config, log);
 
-log.Info($"{triggers.Count} trigger(s) active: {string.Join(", ", triggers.Select(t => t.Key))}");
+log.Info($"{triggers.Count} trigger(s) registered (enable/disable via config.json): {string.Join(", ", triggers.Select(t => t.Key))}");
 
 var prev = GameState.Detached(DateTimeOffset.UtcNow);
 var wasAttached = false;
@@ -57,20 +57,30 @@ while (true)
         if (wt != configWriteTime)
         {
             configWriteTime = wt;
-            config = SafeLoadConfig(configPath, config, log);
-            log.Info("config.json reloaded");
+            config = SafeLoadConfig(configPath, config, log, out var reloaded);
+            if (reloaded)
+            {
+                log.MinLevel = config.LogLevel.Equals("debug", StringComparison.OrdinalIgnoreCase) ? LogLevel.Debug : LogLevel.Info;
+                log.Info("config.json reloaded");
+            }
         }
     }
 
     Thread.Sleep(curr.ProcessAttached ? Math.Max(5, 1000 / Math.Max(1, config.PollHz)) : 2000);
 }
 
-static AppConfig SafeLoadConfig(string path, AppConfig lastGood, Log log)
+static AppConfig SafeLoadConfig(string path, AppConfig lastGood, Log log, out bool success)
 {
-    try { return AppConfig.Load(path); }
+    try
+    {
+        var loaded = AppConfig.Load(path);
+        success = true;
+        return loaded;
+    }
     catch (Exception ex)
     {
         log.Error($"config.json invalid, keeping previous settings: {ex.Message}");
+        success = false;
         return lastGood;
     }
 }
@@ -120,7 +130,17 @@ static void RunDiff(DsrGameStateSource source, Log log, string? hexOffset)
     long blockBase = player;
     if (hexOffset is not null)
     {
-        var follow = mem.ReadInt64(player + Convert.ToInt32(hexOffset, 16));
+        int offset;
+        try
+        {
+            offset = Convert.ToInt32(hexOffset, 16);
+        }
+        catch (Exception ex) when (ex is FormatException or OverflowException or ArgumentException)
+        {
+            log.Error($"--diff: '{hexOffset}' is not a hex offset (example: 0x68 or 68)");
+            return;
+        }
+        var follow = mem.ReadInt64(player + offset);
         if (follow is null or 0) { log.Error("pointer at that offset is null"); return; }
         blockBase = follow.Value;
     }
