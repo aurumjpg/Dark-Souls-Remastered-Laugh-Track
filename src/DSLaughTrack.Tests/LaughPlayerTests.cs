@@ -73,4 +73,15 @@ public class LaughPlayerTests : IDisposable
         var resolved = LaughPlayer.ResolveSound(_root, "death", cfg, new Random(1));
         Assert.Equal(fallback, resolved);
     }
+
+    [Fact]
+    public void PlaybackGate_BlocksWhileBusy_ReopensAfterCompletion()
+    {
+        var player = new LaughPlayer(_root, () => new DSLaughTrack.Config.AppConfig(), new DSLaughTrack.Logging.Log());
+        Assert.True(player.TryBeginPlayback());   // first sound starts
+        Assert.False(player.TryBeginPlayback());  // second fire while busy: skipped
+        Assert.False(player.TryBeginPlayback());  // still busy
+        player.EndPlayback();                     // sound finished
+        Assert.True(player.TryBeginPlayback());   // next fire plays again
+    }
 }

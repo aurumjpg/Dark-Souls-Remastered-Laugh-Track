@@ -1,18 +1,17 @@
-﻿{
+{
   "masterVolume": 0.8,
-  "globalCooldownSeconds": 2.0,
+  "globalCooldownSeconds": 0,
   "pollHz": 30,
   "logLevel": "info",
   "triggers": {
-    "outOfStamina": { "enabled": true,  "volume": 0.7, "cooldownSeconds": 10, "sounds": [] },
-    "tookDamage":   { "enabled": true,  "volume": 0.5, "cooldownSeconds": 8,  "sounds": [] },
-    "dexIncrease":  { "enabled": true,  "volume": 0.8, "cooldownSeconds": 3,  "sounds": [] },
-    "death":        { "enabled": true,  "volume": 1.0, "cooldownSeconds": 5,  "sounds": [] },
-    "emptyEstus":   { "enabled": true,  "volume": 0.8, "cooldownSeconds": 5,  "sounds": [] },
-    "runningJump":  { "enabled": true,  "volume": 0.7, "cooldownSeconds": 6,  "sounds": [] },
-    "gotParried":   { "enabled": true,  "volume": 0.9, "cooldownSeconds": 5,  "sounds": [] },
-    "failedParry":  { "enabled": false, "volume": 0.7, "cooldownSeconds": 5,  "sounds": [] },
-    "hitWall":      { "enabled": true, "volume": 0.6, "cooldownSeconds": 10, "sounds": [] }
+    "outOfStamina": { "enabled": true,  "volume": 0.7, "cooldownSeconds": 0, "sounds": [] },
+    "tookDamage":   { "enabled": true,  "volume": 0.5, "cooldownSeconds": 0, "sounds": [] },
+    "dexIncrease":  { "enabled": true,  "volume": 0.8, "cooldownSeconds": 0, "sounds": [] },
+    "death":        { "enabled": true,  "volume": 1.0, "cooldownSeconds": 0, "sounds": [] },
+    "emptyEstus":   { "enabled": true,  "volume": 0.8, "cooldownSeconds": 0, "sounds": [] },
+    "runningJump":  { "enabled": true,  "volume": 0.7, "cooldownSeconds": 0, "sounds": [] },
+    "gotParried":   { "enabled": true,  "volume": 0.9, "cooldownSeconds": 0, "sounds": [] },
+    "failedParry":  { "enabled": false, "volume": 0.7, "cooldownSeconds": 0, "sounds": [] },
+    "hitWall":      { "enabled": true,  "volume": 0.6, "cooldownSeconds": 0, "sounds": [] }
   }
 }
-
