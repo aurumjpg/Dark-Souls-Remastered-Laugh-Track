@@ -40,10 +40,14 @@ dotnet run --project src/DSLaughTrack
 dotnet publish src/DSLaughTrack -c Release -o publish
 ```
 
-Then run `publish/DSLaughTrack.exe`. `config.json`, `animation_ids.json`, and
-the `sounds/` folder are copied next to the executable automatically (see the
-`<None Include>` entries in `DSLaughTrack.csproj`) — edit the copies next to
-the `.exe`, not the ones in the source tree, once you've published.
+Then run `publish/DSLaughTrack.exe`. `config.json` and `animation_ids.json`
+are copied next to the executable automatically (see the `<None Include>`
+entries in `DSLaughTrack.csproj`); only `.wav`/`.mp3` files inside `sounds/`
+are copied, so on a fresh clone (which ships no audio) create
+`sounds/<triggerName>/` folders next to the `.exe` and drop your files there —
+or put your audio in the source tree's `sounds/` folders before publishing.
+Edit the copies next to the `.exe`, not the ones in the source tree, once
+you've published.
 
 Start Dark Souls: Remastered (offline) and load into a save; the app polls
 for the game process automatically and starts reacting once it detects one.
