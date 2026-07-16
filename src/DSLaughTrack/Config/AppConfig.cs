@@ -26,7 +26,15 @@ public sealed class AppConfig
     public double GlobalCooldownSeconds { get; set; } = 2.0;
     public int PollHz { get; set; } = 30;
     public string LogLevel { get; set; } = "info";
+    /// Optional override for where sound files are read from. Absolute, or relative
+    /// to the exe folder. Null/empty = "sounds" next to the exe. Applied at startup only.
+    public string? SoundsPath { get; set; }
     public Dictionary<string, TriggerConfig> Triggers { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    public string ResolveSoundsRoot(string baseDir) =>
+        string.IsNullOrWhiteSpace(SoundsPath)
+            ? Path.Combine(baseDir, "sounds")
+            : Path.GetFullPath(SoundsPath, baseDir);
 
     public TriggerConfig For(string key) =>
         Triggers.TryGetValue(key, out var t) ? t : new TriggerConfig();

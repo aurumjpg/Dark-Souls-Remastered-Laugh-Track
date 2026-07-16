@@ -60,6 +60,7 @@ for the game process automatically and starts reacting once it detects one.
 | `globalCooldownSeconds` | number | Minimum time between *any* two trigger sounds firing, regardless of trigger. Default 0 (off) — overlap is instead prevented by the no-overlap gate: only one sound plays at a time, fires during playback are skipped (not queued), and the next event after the sound finishes plays normally. |
 | `pollHz` | integer | How many times per second the app reads game state while the game is running. |
 | `logLevel` | `"info"` or `"debug"` | Log verbosity. `debug` adds low-level read-failure diagnostics. |
+| `soundsPath` | string (optional) | Folder to read sound files from, absolute or relative to the exe's folder. Leave out (or empty) to use the default: the `sounds/` folder next to the exe. Handy in development to point straight at the repo's `sounds/` folder. Applied at startup, not hot-reloaded. |
 | `triggers.<name>.enabled` | bool | Whether this trigger can fire at all. |
 | `triggers.<name>.volume` | number 0–1 | Per-trigger volume multiplier (combined with `masterVolume`). |
 | `triggers.<name>.cooldownSeconds` | number | Minimum time between two firings of *this specific* trigger. Default 0 (off) — every event fires, and the no-overlap gate alone paces the audio. Raise it if a trigger feels too chatty. |

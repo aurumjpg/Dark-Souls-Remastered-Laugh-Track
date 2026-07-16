@@ -7,11 +7,11 @@ using DSLaughTrack.Triggers;
 var baseDir = AppContext.BaseDirectory;
 var configPath = Path.Combine(baseDir, "config.json");
 var animPath = Path.Combine(baseDir, "animation_ids.json");
-var soundsRoot = Path.Combine(baseDir, "sounds");
 var logPath = Path.Combine(baseDir, "logs", $"dslaughtrack-{DateTime.Now:yyyyMMdd-HHmmss}.log");
 
 var log = new Log(logPath);
 var config = SafeLoadConfig(configPath, new AppConfig(), log, out _);
+var soundsRoot = config.ResolveSoundsRoot(baseDir);
 log.MinLevel = config.LogLevel.Equals("debug", StringComparison.OrdinalIgnoreCase) ? LogLevel.Debug : LogLevel.Info;
 var configWriteTime = FileTime(configPath);
 
@@ -30,6 +30,7 @@ var engine = new TriggerEngine(triggers, () => config);
 var player = new LaughPlayer(soundsRoot, () => config, log);
 
 log.Info($"{triggers.Count} trigger(s) registered (enable/disable via config.json): {string.Join(", ", triggers.Select(t => t.Key))}");
+log.Info($"sounds folder: {soundsRoot}");
 
 var prev = GameState.Detached(DateTimeOffset.UtcNow);
 var wasAttached = false;

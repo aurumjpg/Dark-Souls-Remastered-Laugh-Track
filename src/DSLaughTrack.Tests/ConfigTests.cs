@@ -49,6 +49,38 @@ public class ConfigTests
     }
 
     [Fact]
+    public void ResolveSoundsRoot_NoSoundsPath_DefaultsToBaseDirSounds()
+    {
+        var cfg = new AppConfig();
+        Assert.Equal(@"C:\app\sounds", cfg.ResolveSoundsRoot(@"C:\app"));
+    }
+
+    [Fact]
+    public void ResolveSoundsRoot_AbsoluteSoundsPath_UsedAsIs()
+    {
+        var path = Path.GetTempFileName();
+        File.WriteAllText(path, """
+            { "soundsPath": "C:\\repo\\sounds" }
+            """);
+        var cfg = AppConfig.Load(path);
+        Assert.Equal(@"C:\repo\sounds", cfg.ResolveSoundsRoot(@"C:\app"));
+    }
+
+    [Fact]
+    public void ResolveSoundsRoot_RelativeSoundsPath_ResolvedAgainstBaseDir()
+    {
+        var cfg = new AppConfig { SoundsPath = @"..\sounds" };
+        Assert.Equal(@"C:\repo\sounds", cfg.ResolveSoundsRoot(@"C:\repo\publish"));
+    }
+
+    [Fact]
+    public void ResolveSoundsRoot_WhitespaceSoundsPath_DefaultsToBaseDirSounds()
+    {
+        var cfg = new AppConfig { SoundsPath = "  " };
+        Assert.Equal(@"C:\app\sounds", cfg.ResolveSoundsRoot(@"C:\app"));
+    }
+
+    [Fact]
     public void Load_MalformedJson_Throws()
     {
         var path = Path.GetTempFileName();
