@@ -39,7 +39,10 @@ public sealed class DsrPointers
     // Source: Remastered.cs — public int GetPlayerHealth() => _playerIns.ReadInt32(0x3e8);
     private const int HealthOffset = 0x3e8;
 
-    // CANDIDATE — derived, not copied verbatim from a single line: DSR-Gadget DSROffsets.cs
+    // VERIFIED LIVE 2026-07-15 (was CANDIDATE; see VERIFICATION.md "Session A evidence"):
+    // max stamina matched the in-game status screen (140), drained/regenerated in real time,
+    // crossed <= 0 at exhaustion (goes negative internally, observed -36).
+    // Derivation — not copied verbatim from a single line: DSR-Gadget DSROffsets.cs
     // enum ChrData1 { ..., Health = 0x3D8, MaxHealth = 0x3DC, Stamina = 0x3E8, MaxStamina = 0x3EC,
     // ... } puts Stamina at Health+0x10 and MaxStamina at Health+0x14 within the same struct.
     // Applying that relative layout to SoulMemory's HealthOffset (0x3e8) gives these candidates.
@@ -52,7 +55,11 @@ public sealed class DsrPointers
     private const int StaminaOffset = HealthOffset + 0x10;
     private const int MaxStaminaOffset = HealthOffset + 0x14;
 
-    // CANDIDATE — animation ID chain. SoulSplitter tag 1.8.5 src/SoulMemory/DarkSouls1/ has no
+    // CHAIN VERIFIED LIVE 2026-07-15 (see VERIFICATION.md "Session A evidence"): reads behave
+    // exactly like an animation ID — idle -1, roll 710, attack combo 254000/254001/254002,
+    // estus drink 7585→7586→7587; distinct, stable, action-specific, reverts at idle.
+    // (Individual trigger animation IDs still come only from animation_ids.json discovery.)
+    // Original provenance below. SoulSplitter tag 1.8.5 src/SoulMemory/DarkSouls1/ has no
     // animation-ID read (grepped Remastered.cs and Ptde.cs for "anim": only unrelated
     // substring hits in symbol names like "WorldChrManImp"). Chain instead reconstructed from
     // DSR-Gadget (github.com/JKAnderson/DSR-Gadget, master @ 4c34636694ead6c4812d223ea506d66f343b0d0b,
@@ -69,7 +76,7 @@ public sealed class DsrPointers
     // ChrData1 itself resolves as (WorldChrBase deref'd once) + 0x68 (deref'd again) — the same
     // two-dereference shape as SoulMemory's _playerIns chain above, which is independent
     // cross-project support that both land on the same player-instance struct.
-    // CANDIDATE ASSUMPTION (unverified until live-tested): DSR-Gadget's "WorldChrBase" AOB
+    // ASSUMPTION (now supported by the live verification above): DSR-Gadget's "WorldChrBase" AOB
     // ("48 8B 05 ? ? ? ? 48 8B 48 68 ...") is a different scan pattern from SoulMemory's
     // "WorldChrManImp" AOB above, but both are assumed to resolve to the same underlying global
     // pointer slot, so this chain reuses our already-scanned _worldChrManImp / PlayerInsAddress()
