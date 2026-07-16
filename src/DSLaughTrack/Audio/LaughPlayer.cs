@@ -28,7 +28,7 @@ public sealed class LaughPlayer
             var file = ResolveSound(_soundsRoot, triggerKey, tc, _rng);
             if (file is null)
             {
-                _log.Warn($"{triggerKey}: fired, but no audio files found (looked in {Path.Combine(_soundsRoot, triggerKey)}) — nothing played");
+                _log.Warn($"{triggerKey}: fired, but no audio files found (looked in {Path.Combine(_soundsRoot, triggerKey)} and {Path.Combine(_soundsRoot, "default")}) — nothing played");
                 return;
             }
             var volume = (float)Math.Clamp(cfg.MasterVolume * tc.Volume, 0.0, 1.0);
@@ -57,13 +57,17 @@ public sealed class LaughPlayer
         }
         else
         {
-            var dir = Path.Combine(soundsRoot, triggerKey);
-            candidates = Directory.Exists(dir)
-                ? Directory.EnumerateFiles(dir)
-                    .Where(f => Extensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase))
-                    .ToList()
-                : new List<string>();
+            candidates = AudioFilesIn(Path.Combine(soundsRoot, triggerKey));
         }
+        if (candidates.Count == 0)
+            candidates = AudioFilesIn(Path.Combine(soundsRoot, "default"));
         return candidates.Count == 0 ? null : candidates[rng.Next(candidates.Count)];
     }
+
+    private static List<string> AudioFilesIn(string dir) =>
+        Directory.Exists(dir)
+            ? Directory.EnumerateFiles(dir)
+                .Where(f => Extensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase))
+                .ToList()
+            : new List<string>();
 }

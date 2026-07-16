@@ -1,4 +1,4 @@
-{
+﻿{
   "masterVolume": 0.8,
   "globalCooldownSeconds": 2.0,
   "pollHz": 30,
@@ -12,6 +12,7 @@
     "runningJump":  { "enabled": true,  "volume": 0.7, "cooldownSeconds": 6,  "sounds": [] },
     "gotParried":   { "enabled": true,  "volume": 0.9, "cooldownSeconds": 5,  "sounds": [] },
     "failedParry":  { "enabled": false, "volume": 0.7, "cooldownSeconds": 5,  "sounds": [] },
-    "hitWall":      { "enabled": false, "volume": 0.6, "cooldownSeconds": 10, "sounds": [] }
+    "hitWall":      { "enabled": true, "volume": 0.6, "cooldownSeconds": 10, "sounds": [] }
   }
 }
+

@@ -47,4 +47,30 @@ public class LaughPlayerTests : IDisposable
     {
         Assert.Null(LaughPlayer.ResolveSound(_root, "death", new TriggerConfig(), new Random(1)));
     }
+
+    [Fact]
+    public void EmptyTriggerFolder_FallsBackToDefaultFolder()
+    {
+        var fallback = Touch(Path.Combine("default", "laugh.wav"));
+        var resolved = LaughPlayer.ResolveSound(_root, "runningJump", new TriggerConfig(), new Random(1));
+        Assert.Equal(fallback, resolved);
+    }
+
+    [Fact]
+    public void TriggerOwnSounds_BeatDefaultFolder()
+    {
+        Touch(Path.Combine("default", "laugh.wav"));
+        var own = Touch(Path.Combine("death", "dirge.wav"));
+        var resolved = LaughPlayer.ResolveSound(_root, "death", new TriggerConfig(), new Random(1));
+        Assert.Equal(own, resolved);
+    }
+
+    [Fact]
+    public void ExplicitListWithOnlyMissingFiles_FallsBackToDefaultFolder()
+    {
+        var fallback = Touch(Path.Combine("default", "laugh.wav"));
+        var cfg = new TriggerConfig { Sounds = { "missing.wav" } };
+        var resolved = LaughPlayer.ResolveSound(_root, "death", cfg, new Random(1));
+        Assert.Equal(fallback, resolved);
+    }
 }

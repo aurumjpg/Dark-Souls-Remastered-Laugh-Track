@@ -72,12 +72,12 @@ Trigger status after the 2026-07-15 live verification sessions (full evidence
 in `VERIFICATION.md`):
 
 - **Verified & enabled by default:** `outOfStamina`, `tookDamage`,
-  `dexIncrease`, `death`, `runningJump`, `emptyEstus`.
-- **`hitWall` — experimental, disabled by default.** It verifiably fires on
-  wall bounces (one- and two-handed captured), but the bounce animation is
-  moveset-relative (other weapons may need extra IDs added to
-  `animation_ids.json`) and it may also fire if a high-stability shield
-  bounces your attack — that case couldn't be ruled out in testing.
+  `dexIncrease`, `death`, `runningJump`, `emptyEstus`, `hitWall`.
+- **`hitWall` caveats:** verified firing on wall bounces (one- and two-handed
+  captured) and verified NOT firing on attacks against the raised shields
+  tested; but the bounce animation is moveset-relative (other weapons may
+  need extra IDs added to `animation_ids.json`) and greatshield-class
+  deflections were never observed, so those remain untested.
 - **`failedParry` — experimental, disabled by default.** Discovery proved a
   successful parry plays the *same* player animation as a whiff, so this
   trigger cannot tell them apart: if enabled, it laughs at every parry
@@ -99,6 +99,11 @@ good config instead of crashing.
 No audio ships with this repo — see `sounds/README.txt`. Drop your own
 `.wav`/`.mp3` files into the folder matching the trigger name, or list exact
 file names in that trigger's `sounds` array in `config.json`.
+
+Any trigger without files of its own falls back to the shared
+`sounds/default/` folder. That makes per-trigger overrides easy: put one
+laugh file in `sounds/default/` and, say, dramatic music in `sounds/death/`
+— death plays its own sound, every other trigger plays the shared laugh.
 
 ## How discovery works
 
