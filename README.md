@@ -101,6 +101,10 @@ No audio ships with this repo — see `sounds/README.txt`. Drop your own
 `.wav`/`.mp3` files into the folder matching the trigger name, or list exact
 file names in that trigger's `sounds` array in `config.json`.
 
+Files are decoded by their actual content, not their extension — a common
+stock-audio-site quirk is MP3 data saved with a `.wav` name, and that plays
+fine. (The folder scan still only picks up files *named* `.wav`/`.mp3`.)
+
 Any trigger without files of its own falls back to the shared
 `sounds/default/` folder. That makes per-trigger overrides easy: put one
 laugh file in `sounds/default/` and, say, dramatic music in `sounds/death/`

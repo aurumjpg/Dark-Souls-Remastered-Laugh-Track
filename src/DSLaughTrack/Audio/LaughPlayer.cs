@@ -1,8 +1,12 @@
 using DSLaughTrack.Config;
 using DSLaughTrack.Logging;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 
 namespace DSLaughTrack.Audio;
+
+/// Audio format detected from a file's actual bytes (not its extension).
+internal enum SniffedFormat { Wav, Mp3, Unknown }
 
 public sealed class LaughPlayer
 {
@@ -44,11 +48,12 @@ public sealed class LaughPlayer
                     return;
                 }
                 var volume = (float)Math.Clamp(cfg.MasterVolume * tc.Volume, 0.0, 1.0);
-                var reader = new AudioFileReader(file) { Volume = volume };
+                var reader = OpenAudioFile(file);
+                var samples = new VolumeSampleProvider(reader.ToSampleProvider()) { Volume = volume };
                 var output = new WaveOutEvent();
                 output.PlaybackStopped += (_, _) => { output.Dispose(); reader.Dispose(); EndPlayback(token); };
                 RegisterStopper(token, output.Stop);
-                output.Init(reader);
+                output.Init(samples);
                 output.Play();
                 _log.Info($"LAUGH [{triggerKey}] {Path.GetFileName(file)} (vol {volume:0.00})");
             }
@@ -101,6 +106,28 @@ public sealed class LaughPlayer
             }
         }
     }
+
+    /// Detects the real audio format from the file's leading bytes, so mislabeled
+    /// downloads (e.g. MP3 data with a .wav filename) still decode correctly.
+    internal static SniffedFormat DetectFormat(string path)
+    {
+        var header = new byte[4];
+        using var fs = File.OpenRead(path);
+        if (fs.Read(header, 0, 4) < 4) return SniffedFormat.Unknown;
+        if (header[0] == 'R' && header[1] == 'I' && header[2] == 'F' && header[3] == 'F') return SniffedFormat.Wav;
+        if (header[0] == 'I' && header[1] == 'D' && header[2] == '3') return SniffedFormat.Mp3;       // ID3-tagged MP3
+        if (header[0] == 0xFF && (header[1] & 0xE0) == 0xE0) return SniffedFormat.Mp3;                // bare MPEG frame sync
+        return SniffedFormat.Unknown;
+    }
+
+    internal static WaveStream OpenAudioFile(string path) => DetectFormat(path) switch
+    {
+        SniffedFormat.Wav => new WaveFileReader(path),
+        SniffedFormat.Mp3 => new Mp3FileReader(path),
+        // Unknown: fall back to extension-based decoding (also covers anything
+        // else Windows MediaFoundation can play).
+        _ => new AudioFileReader(path),
+    };
 
     internal static string? ResolveSound(string soundsRoot, string triggerKey, TriggerConfig cfg, Random rng)
     {
